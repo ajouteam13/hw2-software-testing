@@ -8,5 +8,6 @@ import java.util.List;
 public interface IdolRepository {
     Idol findMemberByGroupName(String groupName);
     List<Idol> findAll(String groupName);
-    Idol updateIdolProfile(String groupName, String name, int age, String position);
+    Idol updateIdolProfile(String groupName, String name, int age, String position)
+    Idol findByName(String name);
 }
