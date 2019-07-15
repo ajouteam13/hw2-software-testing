@@ -26,6 +26,12 @@ public class IdolService {
         Idol idol = new Idol(groupName,name,age,position);
         return idol;
     }
+
+    public Idol findByName(String name){
+        Idol idol = idolRepository.findByName(name);
+        return idol;
+    }
+
 }
 
 
