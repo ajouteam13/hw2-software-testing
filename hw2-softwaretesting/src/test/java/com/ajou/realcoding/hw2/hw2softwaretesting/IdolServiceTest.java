@@ -17,7 +17,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdolServiceTest {
@@ -41,5 +41,25 @@ public class IdolServiceTest {
         Mockito.when(idolService.findAllMembersByGroupName("BTS")).thenReturn(idols);
         Mockito.when(idols.size()).thenReturn(7);
         MatcherAssert.assertThat(idols.size(), is(7));
+    }
+
+    @Test(expected = IllegalArgumentException.class) // 임희균
+    public void 아이돌이아닐때익셉션발생테스트() { //그룹 이름으로 길구봉구를 저장하면 Exception 발생하는지 테스트
+        Idol idol = mock(Idol.class);
+        doThrow(new IllegalArgumentException()).when(idol).setGroupName("길구봉구");
+        idol.setGroupName("길구봉구");
+    }
+
+    @Test // 임희균
+    public void shouldReturnProperAge() {  //그룹명으로 검색하면 객체를 리턴받고 정확한 나이를 리턴하는지 테스트
+        when(idolService.findMemberByGroupName("BTS")).thenReturn(new Idol("BTS", "진", 28, "보컬"));
+        assertThat(idolService.findMemberByGroupName("BTS").getAge(), is(28));
+    }
+
+    @Test // 임희균
+    public void 그룹명으로멤버찾고Service메소드호출검증테스트() {  //그룹명으로 검색하면 idolRepository의 findMemberByGroupName 메소드가 실행되는지 테스트
+        when(idolService.findMemberByGroupName(anyString())).thenReturn(new Idol("BTS", "진", 28, "보컬"));
+        String memberName = idolService.findMemberByGroupName(anyString()).getMemberName();
+        verify(idolRepository, times(1)).findMemberByGroupName(anyString());
     }
 }
