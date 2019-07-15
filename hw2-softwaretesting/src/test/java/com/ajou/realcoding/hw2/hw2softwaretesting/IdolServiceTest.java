@@ -17,7 +17,7 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IdolServiceTest {
@@ -27,15 +27,15 @@ public class IdolServiceTest {
     @InjectMocks
     private IdolService idolService;
 
-
-    @Test // 김지원
+    // 김지원
+    @Test 
     public void 그룹명으로멤버찾기테스트() {
         when(idolService.findMemberByGroupName("BTS")).thenReturn(new Idol("BTS", "뷔", 25, "비주얼"));
         String groupName = idolService.findMemberByGroupName("BTS").getGroupName();
         assertThat(groupName, is("BTS"));
     }
-
-    @Test // 김지원
+    // 김지원
+    @Test 
     public void 그룹명으로모든멤버찾기테스트(){
         List<Idol> idols = Mockito.mock(List.class);
         Mockito.when(idolService.findAllMembersByGroupName("BTS")).thenReturn(idols);
@@ -69,6 +69,25 @@ public class IdolServiceTest {
         assertThat(idolinfo.getMemberName(),is("진"));
 
     }
+    //임희균
+    @Test(expected = IllegalArgumentException.class)
+    public void 아이돌이아닐때익셉션발생테스트() { //그룹 이름으로 길구봉구를 저장하면 Exception 발생하는지 테스트
+        Idol idol = mock(Idol.class);
+        doThrow(new IllegalArgumentException()).when(idol).setGroupName("길구봉구");
+        idol.setGroupName("길구봉구");
+    }
+    //임희균
+    @Test 
+    public void shouldReturnProperAge() {  //그룹명으로 검색하면 객체를 리턴받고 정확한 나이를 리턴하는지 테스트
+        when(idolService.findMemberByGroupName("BTS")).thenReturn(new Idol("BTS", "진", 28, "보컬"));
+        assertThat(idolService.findMemberByGroupName("BTS").getAge(), is(28));
+    }
 
-
+    //임희균
+    @Test 
+    public void 그룹명으로멤버찾고Service메소드호출검증테스트() {  //그룹명으로 검색하면 idolRepository의 findMemberByGroupName 메소드가 실행되는지 테스트
+        when(idolService.findMemberByGroupName(anyString())).thenReturn(new Idol("BTS", "진", 28, "보컬"));
+        String memberName = idolService.findMemberByGroupName(anyString()).getMemberName();
+        verify(idolRepository, times(1)).findMemberByGroupName(anyString());
+    }
 }
