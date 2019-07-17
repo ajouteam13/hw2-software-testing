@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class IdolServiceTest {
     @Mock
     private IdolRepository idolRepository;
