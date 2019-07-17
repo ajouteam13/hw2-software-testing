@@ -15,7 +15,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -65,7 +67,7 @@ public class IdolServiceTest {
     public void updateInfoTest()
     {
         Idol idol = mock(Idol.class);
-        Idol idolinfo = idolService.UpdateIdolProfile("BTS","진",25,"dancer");
+        Idol idolinfo = idolService.updateIdolProfile("BTS","진",25,"dancer");
         assertThat(idolinfo.getMemberName(),is("진"));
 
     }
@@ -89,5 +91,29 @@ public class IdolServiceTest {
         when(idolService.findMemberByGroupName(anyString())).thenReturn(new Idol("BTS", "진", 28, "보컬"));
         String memberName = idolService.findMemberByGroupName(anyString()).getMemberName();
         verify(idolRepository, times(1)).findMemberByGroupName(anyString());
+    }
+    //노근탁
+    @Test
+    public void 이름으로멤버찾고_메소드가최소2번이상호출되는지검증(){ //이름으로 멤버를찾고 해당 메소드가 최소두번이상호출되면 pass
+        when(idolService.findByName(any(String.class))).thenReturn(new Idol("BTS","정국",23,"보컬"));
+        System.out.println(idolService.findByName("뷔").getMemberName());
+        System.out.println(idolService.findByName("진").getMemberName());
+        verify(idolRepository, atLeast(2)).findByName(any(String.class));
+    }
+    //노근탁
+    @Test
+    public void 그룹명이영어일때_대소문자상관없이_동일한지여부확인(){
+        Idol idol = mock(Idol.class);
+        Idol idol1 = mock(Idol.class);
+        idol = idolService.updateIdolProfile("BTS","정국",23,"보컬");
+        idol1 = idolService.updateIdolProfile("bts","정국",23,"보컬");
+        assertThat(idol.getGroupName(),equalToIgnoringCase(idol1.getGroupName()));
+    }
+    //노근탁
+    @Test(expected = IllegalArgumentException.class)
+    public void 그룹가수가아닌_배우가들어가면_예외처리검증(){
+        Idol idol = mock(Idol.class);
+        doThrow(new IllegalArgumentException()).when(idol).setPosition("배우");
+        idol.setPosition("배우");
     }
 }
